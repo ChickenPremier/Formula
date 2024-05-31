@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оценка результативности</title>
+    <!-- Подключаем Bootstrap 4 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Дополнительные стили */
+        body {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5 mb-4">Оценка результативности</h1>
+        
+        <p>Формула для расчета результативности:</p>
+        <p>R = 1.5 * log(1 + (PWC / 300)) +               <!-- Коэффициент 1.5 умножается на логарифм, в котором аргументом является 1 плюс отношение PWC к 300 -->
+           1.2 * (T / 20)^(0.5) +                         <!-- Коэффициент 1.2 умножается на корень квадратный из выражения T деленного на 20 -->
+           e^(-%жира / 10) +                               <!-- Экспонента, где аргументом является процент жира, деленный на 10 -->
+           1.3 * sqrt(СОЖ) +                               <!-- Коэффициент 1.3 умножается на квадратный корень из СОЖ -->
+           0.8 * log(1 + (Потребление / 300)) +            <!-- Коэффициент 0.8 умножается на логарифм, в котором аргументом является 1 плюс отношение потребления к 300 -->
+           0.6 * ALA^(0.8)                                 <!-- Коэффициент 0.6 умножается на ALA, возведенное в степень 0.8 -->
+        </p>
+        <hr>
+
+        <form id="resultForm">
+            <div class="form-group">
+                <label for="pwc">PWC170 (Вт):</label>
+                <input type="number" step="1" id="pwc" name="pwc" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="time">Время теста на аксиконе (мин):</label>
+                <input type="number" step="0.1" id="time" name="time" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="fat">Процент жира (%):</label>
+                <input type="number" step="0.1" id="fat" name="fat" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="sozh">СОЖ максимальный (г/мин):</label>
+                <input type="number" step="0.01" id="sozh" name="sozh" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="carbs">Потребление углеводов (г/день):</label>
+                <input type="number" step="1" id="carbs" name="carbs" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="ala">Количество ALA (г/день):</label>
+                <input type="number" step="0.01" id="ala" name="ala" class="form-control" required>
+            </div>
+
+            <button type="button" onclick="calculateResult()" class="btn btn-primary" id="calculateBtn" disabled>Рассчитать результативность</button>
+        </form>
+
+        <div id="result" class="mt-4"></div>
+    </div>
+
+    <!-- Подключаем скрипт Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // JavaScript код
+        function calculateResult() {
+            // Получение значений из формы
+            var pwc = parseFloat(document.getElementById('pwc').value);
+            var time = parseFloat(document.getElementById('time').value);
+            var fat = parseFloat(document.getElementById('fat').value);
+            var sozh = parseFloat(document.getElementById('sozh').value);
+            var carbs = parseFloat(document.getElementById('carbs').value);
+            var ala = parseFloat(document.getElementById('ala').value);
+
+            // Вычисление результативности
+            var result = calculate(pwc, time, fat, sozh, carbs, ala);
+
+            // Вывод результата
+            document.getElementById('result').innerHTML = "<h2>Результативность: " + result.toFixed(2) + "</h2>";
+            document.getElementById('result').innerHTML += "<p>" + interpretResult(result) + "</p>";
+        }
+
+        function calculate(pwc, time, fat, sozh, carbs, ala) {
+            // Здесь будет ваша реализация формулы для расчета результативности
+            // Замените этот блок кода вашей формулой
+            var result = 1.5 * Math.log(1 + pwc / 300) +
+                         1.2 * Math.pow(time / 20, 0.5) +
+                         Math.exp(-fat / 10) +
+                         1.3 * Math.sqrt(sozh) +
+                         0.8 * Math.log(1 + carbs / 300) +
+                         0.6 * Math.pow(ala, 0.8);
+
+            return result;
+        }
+
+        function interpretResult(result) {
+            // Функция для интерпретации значения результативности
+            if (result < 3) {
+                return "Плохой результат";
+            } else if (result < 5) {
+                return "Нормальный результат";
+            } else {
+                return "Хороший результат";
+            }
+        }
+
+        // Включение/отключение кнопки в зависимости от заполненности полей
+        document.addEventListener('input', function() {
+            var inputs = document.querySelectorAll('input[type="number"]');
+            var isFilled = true;
+            inputs.forEach(function(input) {
+                if (!input.value) {
+                    isFilled = false;
+                }
+            });
+            document.getElementById('calculateBtn').disabled = !isFilled;
+        });
+    </script>
+</body>
+</html>
